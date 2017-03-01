@@ -6,7 +6,7 @@ Point  -- point with (x,y) coordinates
 Rect  -- two points, forming a rectangle
 """
 
-import math
+import math, json
 
 
 class Point:
@@ -144,13 +144,6 @@ class Rect:
        |                           left  -+-  right
        v                                  |
     y increases                         bottom
-
-    set_points  -- reset rectangle coordinates
-    contains  -- is a point inside?
-    overlaps  -- does a rectangle overlap?
-    top_left  -- get top-left corner
-    bottom_right  -- get bottom-right corner
-    expanded_by  -- grow (or shrink)
     """
 
     def __init__(self, (left, top, right, bottom)):
@@ -160,49 +153,59 @@ class Rect:
         self.right = right
         self.bottom = bottom
 
-    def set_points(self, pt1, pt2):
-        """Reset the rectangle coordinates."""
-        (x1, y1) = pt1.as_tuple()
-        (x2, y2) = pt2.as_tuple()
-        self.left = min(x1, x2)
-        self.top = min(y1, y2)
-        self.right = max(x1, x2)
-        self.bottom = max(y1, y2)
+class Card:
+    
+    def __init__(self, cardId, id):
+        self.cardId = cardId
+        self.id = id
 
-    def contains(self, pt):
-        """Return true if a point is inside the rectangle."""
-        x,y = pt.as_tuple()
-        return (self.left <= x <= self.right and
-                self.top <= y <= self.bottom)
-
-    def overlaps(self, other):
-        """Return true if a rectangle overlaps this rectangle."""
-        return (self.right > other.left and self.left < other.right and
-                self.top < other.bottom and self.bottom > other.top)
+    def getName(self):
+        with open('cards.json') as data_file:    
+            data = json.load(data_file)
+        for i in range(len(data)):
+            if "name" in data[i] and data[i]["id"] == self.cardId:
+                return data[i]["name"]
+                break
+        else:
+            return "NONE"
+        
+        
+    def __eq__(self, other):
+        return self.__dict__ == other.__dict__
+        
+class PlayerHand:
+    def __init__(self):
+        self.cardsList = []
+        
+    def addCard(self, card): #add card in the right position
+        self.cardsList.append(card)
+        
+    def addCardByIds(self, cardId, id):
+        self.addCard(Card(cardId, id))
+        
+    def addListOfCards(self, cardsList):
+        for i in cardsList:
+            self.addCard(i)
     
-    def top_left(self):
-        """Return the top-left corner as a Point."""
-        return Point(self.left, self.top)
+    def printCardsNames(self):
+        for i in self.cardsList:
+            print i.getName() + ", ",
+        else:
+            print
     
-    def bottom_right(self):
-        """Return the bottom-right corner as a Point."""
-        return Point(self.right, self.bottom)
+    def getCardIndex(self, card): #find card position in the player hand
+        for i in range(len(self.cardsList)):
+            if self.cardsList[i] == card:
+                return i + 1
+                break
+        else:
+            return 0
+        
+    def getCardByIndex(self, ind):
+        self.cardsList[ind - 1]
+        
+    def removeCardByIndex(self, ind):
+        del self.cardsList[ind - 1]
     
-    def expanded_by(self, n):
-        """Return a rectangle with extended borders.
-
-        Create a new rectangle that is wider and taller than the
-        immediate one. All sides are extended by "n" points.
-        """
-        p1 = Point(self.left-n, self.top-n)
-        p2 = Point(self.right+n, self.bottom+n)
-        return Rect(p1, p2)
-    
-    def __str__( self ):
-        return "<Rect (%s,%s)-(%s,%s)>" % (self.left,self.top,
-                                           self.right,self.bottom)
-    
-    def __repr__(self):
-        return "%s(%r, %r)" % (self.__class__.__name__,
-                               Point(self.left, self.top),
-                               Point(self.right, self.bottom))
+    def removeCard(self, card):
+        self.removeCardByIndex(self.getCardIndex(card))
