@@ -209,3 +209,9 @@ class PlayerHand:
     
     def removeCard(self, card):
         self.removeCardByIndex(self.getCardIndex(card))
+        
+    def isHaveCard(self, cardId):
+        for i in self.cardsList:
+            if i.cardId == cardId:
+                return True
+        return False
