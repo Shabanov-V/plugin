@@ -1,7 +1,11 @@
 import time, os
 import re
 import json
+import thread
 from DataStructures import *
+from MouseControls import *
+
+
 
 def getNameByID(id): # DEBUG
     with open('cards.json') as data_file:    
@@ -40,23 +44,9 @@ playerHand = PlayerHand()
 
 isGotCoin = False
 
-def f(line):
-    global isGotCoin
-    toFriendlyHand = re.search(p_toFriendlyHand, line)
-    fromFriendlyHand = re.search(p_fromFriendlyHand, line)
-    turnStart = re.search(p_turnStart, line)
-    
-    if (playerHand.isHaveCard("GAME_005")):
-        isGotCoin = True
-    if turnStart:
-        if ((isGotCoin and int(turnStart.group("number")) % 2 == 0) or ((not isGotCoin) and int(turnStart.group("number")) % 2 == 1)):
-            print "YOUR TURN!!! Number: " + str(int(turnStart.group("number")) / 2) + "   //" + turnStart.group("number")
-    if toFriendlyHand:
-        playerHand.addCard(Card(toFriendlyHand.group("cardId"), toFriendlyHand.group("id")))
-        playerHand.printCardsNames()
-    if fromFriendlyHand:
-        playerHand.removeCard(Card(fromFriendlyHand.group("cardId"), fromFriendlyHand.group("id")))
-        playerHand.printCardsNames()
+def sleepAndMoveToCard(card, playerHand):
+    time.sleep(5)
+    MoveToCard(card, playerHand)
 
 while 1:
     where1 = file1.tell()
@@ -71,16 +61,18 @@ while 1:
         fromFriendlyHand = re.search(p_fromFriendlyHand, line)
         turnStart = re.search(p_turnStart, line)
         
-        if (playerHand.isHaveCard("GAME_005")):
+        if toFriendlyHand:
+            playerHand.addCard(Card(toFriendlyHand.group("cardId"), toFriendlyHand.group("id")))
+            #playerHand.printCardsNames()
+        if fromFriendlyHand:
+            playerHand.removeCard(Card(fromFriendlyHand.group("cardId"), fromFriendlyHand.group("id")))
+            #playerHand.printCardsNames()
+            
+        if (playerHand.isInHand("GAME_005")):
             isGotCoin = True
         if turnStart:
             #print "Turn start"
             if ((isGotCoin and int(turnStart.group("number")) % 2 == 0) or ((not isGotCoin) and int(turnStart.group("number")) % 2 == 1)):
+                if (int(turnStart.group("number"))) / 2 >= 1:
+                    thread.start_new_thread(sleepAndMoveToCard, (playerHand.cardsList[0], playerHand))
                 print "YOUR TURN!!! Number: " + str(int(turnStart.group("number")) / 2)# + "   //" + turnStart.group("number")
-                print isGotCoin
-        if toFriendlyHand:
-            playerHand.addCard(Card(toFriendlyHand.group("cardId"), toFriendlyHand.group("id")))
-            playerHand.printCardsNames()
-        if fromFriendlyHand:
-            playerHand.removeCard(Card(fromFriendlyHand.group("cardId"), fromFriendlyHand.group("id")))
-            playerHand.printCardsNames()

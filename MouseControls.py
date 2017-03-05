@@ -83,3 +83,16 @@ def EndDrag():
     win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, xpos, ypos, 0, 0)
     time.sleep(randint(70, 130));   
     
+def MoveToCard(card, playerHand):
+    if (playerHand.isInHand(card.cardId)):
+        cardNum = playerHand.getCardIndex(card)
+        totalCards = len(playerHand.cardsList)
+        handwidth = 0
+        if (totalCards < 4):
+            handwidth = 10 * totalCards
+        else:
+            handwidth = 38
+        x = (((cardNum * 1.0) / (totalCards)) * handwidth) - (handwidth / 2.0) - 0.8
+        y = (x * -0.16) * (x * -0.16)
+        MoveTo(x + 44, y + 89)
+    
