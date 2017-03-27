@@ -135,7 +135,7 @@ class PlayerBoard:
     def printMinionsNames(self):
         for i in range(len(self.minionsList)):
             if isinstance(self.minionsList[i], Minion):
-                print self.minionsList[i].getName() + " " + str(i)
+                print self.minionsList[i].getName() + " id:" + self.minionsList[i].id + " Pos:" + str(i)
         else:
             print
             

@@ -18,6 +18,10 @@ def getNameByID(id): # DEBUG
         return "NONE"
               
 
+def sleepAndMoveToCard(card, playerHand):
+    time.sleep(5)
+    MoveToCard(card, playerHand)
+              
 #Set the filename and open the file
 filename = 'C:\Program Files (x86)\Hearthstone\Logs\Power.log'
 filename1 = 'C:\Program Files (x86)\Hearthstone\Logs\Zone.log'
@@ -49,9 +53,6 @@ playerBoard = PlayerBoard()
 
 isGotCoin = False
 
-def sleepAndMoveToCard(card, playerHand):
-    time.sleep(5)
-    MoveToCard(card, playerHand)
 
 while 1:
     where1 = file1.tell()
