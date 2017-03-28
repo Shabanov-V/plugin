@@ -55,9 +55,11 @@ class Card:
 class PlayerHand:
     def __init__(self):
         self.cardsList = []
+        self.mullCard = Card(None, None)
         
     def addCard(self, card): #add card in the right position
         self.cardsList.append(card)
+        self.mullCard = card
         
     def addCardByIds(self, cardId, id):
         self.addCard(Card(cardId, id))
@@ -67,8 +69,8 @@ class PlayerHand:
             self.addCard(i)
     
     def printCardsNames(self):
-        for i in self.cardsList:
-            print i.getName() + ", ",
+        for i in range(len(self.cardsList)):
+            print self.cardsList[i].getName() + " id:" + self.cardsList[i].id + " Pos:" + str(i)
         else:
             print
     
@@ -85,6 +87,13 @@ class PlayerHand:
         
     def removeCardByIndex(self, ind):
         del self.cardsList[ind - 1]
+        
+    def mulliganCardByIndex(self, ind):
+        self.cardsList[ind - 1] = self.mullCard
+        self.cardsList = self.cardsList[:len(self.cardsList) - 1]
+
+    def mulliganCard(self, card):
+        self.mulliganCardByIndex(self.getCardIndex(card))
     
     def removeCard(self, card):
         self.removeCardByIndex(self.getCardIndex(card))
@@ -96,9 +105,6 @@ class PlayerHand:
         return False
 
 class Minion:
-    def __init__(self, cardId, id):
-        self.cardId = cardId
-        self.id = id
         
     def getName(self):
         with open('cards.json') as data_file:    
@@ -109,9 +115,36 @@ class Minion:
                 break
         else:
             return "NONE"
+    
+    def getAttack(self):
+        with open('cards.json') as data_file:    
+            data = json.load(data_file)
+        for i in range(len(data)):
+            if "attack" in data[i] and data[i]["id"] == self.cardId:
+                return data[i]["attack"]
+                break
+        else:
+            return "NONE"
+            
+    def getHealth(self):
+        with open('cards.json') as data_file:    
+            data = json.load(data_file)
+        for i in range(len(data)):
+            if "health" in data[i] and data[i]["id"] == self.cardId:
+                return data[i]["health"]
+                break
+        else:
+            return "NONE"
         
     def __eq__(self, other):
         return self.__dict__ == other.__dict__
+        
+    
+    def __init__(self, cardId, id):
+        self.cardId = cardId
+        self.id = id
+        self.attack = self.getAttack()
+        self.health = self.getHealth()
         
 class PlayerBoard:
     def __init__(self):
@@ -135,7 +168,7 @@ class PlayerBoard:
     def printMinionsNames(self):
         for i in range(len(self.minionsList)):
             if isinstance(self.minionsList[i], Minion):
-                print self.minionsList[i].getName() + " id:" + self.minionsList[i].id + " Pos:" + str(i)
+                print self.minionsList[i].getName() + " " + str(self.minionsList[i].attack) + "/" + str(self.minionsList[i].health) + " id:" + self.minionsList[i].id + " Pos:" + str(i)
         else:
             print
             
@@ -143,7 +176,7 @@ class PlayerBoard:
         #print "Find: (" + str(minion.cardId) + ", " + str(minion.id) + ")"
         for i in range(len(self.minionsList)):
             #print "---> (" + str(self.minionsList[i].cardId) + ", " + str(self.minionsList[i].id) + ")"
-            if isinstance(self.minionsList[i], Minion) and self.minionsList[i] == minion:
+            if isinstance(self.minionsList[i], Minion) and self.minionsList[i].id == minion.id:
                 return i
                 break
         else:
