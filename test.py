@@ -33,6 +33,10 @@ file1.seek(os.stat(filename1)[6])
 p_changeTag = r"TAG_CHANGE Entity=((.name=(?P<name>[^\]]*) id=(?P<id>\d*).*cardId=(?P<cardId>.*) player=.*)|((?P<label>[a-zA-Z]+))) tag=(?P<tagName>.*) value=(?P<value>.*)"
 
 p_playCard = r"PowerTaskList.DebugPrintPower.. - BLOCK_START BlockType=POWER Entity=.name=(?P<name>.{1,30}) id=(?P<id>\d*) zone=(?P<zone>.{1,10}) zonePos=(?P<zonePos>.) cardId=(?P<cardId>.{1,20}) player=1.*"
+
+
+p_playCard1 = r"PowerTaskList.DebugPrintPower.. - BLOCK_START BlockType=POWER Entity=.name=(?P<name>.{1,30}) id=(?P<id>\d*) zone=(?P<zone>.{1,10}) zonePos=(?P<zonePos>.) cardId=(?P<cardId>.{1,20}) player=2.*"
+
 p_blockEnd = r".*BLOCK_END.*"
 
 
@@ -50,6 +54,7 @@ transitCards = []
 
 playerHand = PlayerHand()
 playerBoard = PlayerBoard()
+opponentBoard = PlayerBoard()
 
 print
 
@@ -71,8 +76,16 @@ bt3 = Button(root)
 bt3.pack()
 bt3["text"] = "Print all hand cards"
 
+
+bt4 = Button(root)
+bt4.pack()
+bt4["text"] = "Print opp board"
+
 def printMinions(event):
     playerBoard.printMinionsNames()
+    
+def printMinions1(event):
+    opponentBoard.printMinionsNames()
 
 def printAllTags(event):
     for key, value in Tags[ed.get()].iteritems():
@@ -85,13 +98,14 @@ def printHandCards(event):
 bt1.bind("<Button-1>", printMinions)
 bt2.bind("<Button-1>", printAllTags)
 bt3.bind("<Button-1>", printHandCards)
+bt4.bind("<Button-1>", printMinions1)
 
 
 thread = Thread(target = root.mainloop, args = ())
 thread.start()
 
 f = "0"
-mulligan = "2"
+mulligan = "3"
 
 while 1:
     
@@ -106,6 +120,7 @@ while 1:
     else:
         changeTag = re.search(p_changeTag, line)
         playCard = re.search(p_playCard, line)
+        playCard1 = re.search(p_playCard1, line)
         blockEnd = re.search(p_blockEnd, line)
         toFriendlyHand = re.search(p_toFriendlyHand, line)
         fromFriendlyHand = re.search(p_fromFriendlyHand, line)
@@ -138,6 +153,16 @@ while 1:
             Tags[playCard.group("id")]["zonePos"] = playCard.group("zonePos")
             if (playCard.group("zonePos") != "0"):
                 playerBoard.addMinion(Minion(playCard.group("cardId"), playCard.group("id")), playCard.group("zonePos"))
+            #print playCard.group("name") + " " + playCard.group("id") + ": " + playCard.group("zone") + " " + playCard.group("zonePos")
+        
+            #playerHand.printCardsNames()
+            
+        if (playCard1):
+            Tags[playCard1.group("id")]["cardId"] = playCard1.group("cardId")
+            Tags[playCard1.group("id")]["zone"] = playCard1.group("zone")
+            Tags[playCard1.group("id")]["zonePos"] = playCard1.group("zonePos")
+            if (playCard1.group("zonePos") != "0"):
+                opponentBoard.addMinion(Minion(playCard1.group("cardId"), playCard1.group("id")), playCard1.group("zonePos"))
             #print playCard.group("name") + " " + playCard.group("id") + ": " + playCard.group("zone") + " " + playCard.group("zonePos")
         
             #playerHand.printCardsNames()
