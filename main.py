@@ -7,7 +7,8 @@ zone.seek(os.stat(zone_filename)[6])
 
 my_hand = myHandCards()
 
-while 1:
+
+while True:
     where_zone = zone.tell()
     log_line = zone.readline()
     if not log_line:
