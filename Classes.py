@@ -36,9 +36,6 @@ class Card():
     #TODO: Add card in hand bafs
 # Can I write without self.methodName or self.fieldName?
 
-
-
-
 class Minion(Card):
     card_id = None #int
     special_id = None #int
