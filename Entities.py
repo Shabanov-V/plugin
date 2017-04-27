@@ -103,3 +103,44 @@ class myHandCards(IAlterationEntity):
             self.debug_print_shit()
         if changed_position:
             self.change_card_position(changed_position.group("id"), int(changed_position.group("pos_2")))
+            
+            
+
+class board(IAlterationEntity):
+    def __init__(self):
+        self.minions = []
+        
+    def debug_print_shit(self):
+        print "******************"
+        print '\n'.join(str(item.name) for item in self.hand_cards)
+        
+    def add_minion(self, minion, dstPos):
+        dstPos = int(dstPos)
+        if dstPos == 0:
+            return
+        if dstPos == len(self.minions):
+            self.minions[dstPos] = minion
+        else:
+            for i in range(7, dstPos, -1):
+                self.minions[i] = self.minions[i - 1]
+            self.minions[dstPos] = minion 
+    
+    def get_minion_index(self, minion):
+        for i in range(len(self.minions)):
+            if isinstance(self.minions[i], Minion) and self.minions[i].id == minion.id:
+                return i
+                break
+        else:
+            return 0
+            
+    
+    
+    def remove_minion_by_index(self, index):
+        if index == 0:
+            return
+        for i in range(index, 7):
+            self.minions[i] = self.minions[i + 1]
+        self.minions[7] = 0
+        
+    def remove_minion(self, minion):
+        self.removeMinionByIndex(self.getMinionIndex(minion))
