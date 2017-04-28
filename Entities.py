@@ -103,3 +103,76 @@ class myHandCards(IAlterationEntity):
             self.debug_print_shit()
         if changed_position:
             self.change_card_position(changed_position.group("id"), int(changed_position.group("pos_2")))
+            
+            
+class board(IAlterationEntity):
+    minions = [Minion(None, None)] * 10
+    def __init__(self):
+        self.minions = [Minion(None, None)] * 10
+        
+    def addMinion(self, minion, dstPos):
+        if minion.type != "MINION":
+            return
+        dstPos = int(dstPos)
+        if dstPos == len(self.minions) or dstPos == 0:
+            self.minions[dstPos] = minion
+        else:
+            for i in range(7, dstPos, -1):
+                self.minions[i] = self.minions[i - 1]
+            self.minions[dstPos] = minion 
+                
+    
+    def get_minion_index_by_id(self, special_id):
+        for i in range(len(self.minions)):
+            if isinstance(self.minions[i], Minion) and self.minions[i].special_id == special_id:
+                return i
+                break
+        else:
+            return None
+    
+    def getMinionIndex(self, minion):
+        return self.get_minion_index_by_id(minion.special_id)
+    
+    def removeMinionByIndex(self, index):
+        if index == None:
+            return
+        if index == 0:
+            self.minions[index] = Minion(None, None)
+            return
+        for i in range(index, 7):
+            self.minions[i] = self.minions[i + 1]
+        self.minions[7] = Minion(None, None)
+        
+    def removeMinion(self, minion):
+        self.removeMinionByIndex(self.getMinionIndex(minion))
+        
+    def debug_print_shit(self):
+        print "******************"
+        
+        for i in range(len(self.minions)):
+            if isinstance(self.minions[i], Minion):
+                print str(self.minions[i].name) + " " + str(self.minions[i].special_id)
+    
+    def change_position(self, special_id, dstPos):
+        ti = self.get_minion_index_by_id(special_id)
+        if ti == None:
+            return
+        t = self.minions[ti]
+        if t == None:
+            return
+        self.removeMinionByIndex(ti)
+        self.addMinion(t, dstPos)
+    
+    def check_n_change(self, logLine):
+        minionPlay = re.search(regExps.minionPlay1, logLine)
+        minionChangePosition = re.search(regExps.minionChangePosition1, logLine)
+        died = re.search(regExps.died, logLine)
+        if died:
+            self.removeMinion(Minion(died.group("cardId"), int(died.group("id"))))
+            self.debug_print_shit()
+        if minionPlay:
+            self.addMinion(Minion(minionPlay.group("cardId"), minionPlay.group("id")), minionPlay.group("dstPos"))
+            self.debug_print_shit()
+        if minionChangePosition:
+            self.change_position(minionChangePosition.group("id"), int(minionChangePosition.group("dstPos")))
+            self.debug_print_shit()

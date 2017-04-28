@@ -37,6 +37,7 @@ class Card():
 # Can I write without self.methodName or self.fieldName?
 
 class Minion(Card):
+    name = None
     card_id = None #int
     special_id = None #int
     json_num = None #str
@@ -54,12 +55,12 @@ class Minion(Card):
     num_attacks_this_turn = None #int
     poisonous = None #bool
     cost = None #int
-    def __init__(self, cardId, specialId, isMine):
-        self.special_id = specialId
-        self.card_id    = cardId
-        self.json_num   = json_id_by_cardId(cardId)
-        self.name       = get_json_prop(cardId, "name")
+    def __init__(self, cardId, specialId):
         self.type       = get_json_prop(cardId, "type")
-        self.attack     = get_json_prop(cardId, "attack")
-        self.health     = get_json_prop(cardId, "health")
-        self.isMine     = isMine
+        if (self.type == "MINION"):
+            self.special_id = specialId
+            self.card_id    = cardId
+            self.json_num   = json_id_by_cardId(cardId)
+            self.name       = get_json_prop(cardId, "name")
+            self.attack     = get_json_prop(cardId, "attack")
+            self.health     = get_json_prop(cardId, "health")
