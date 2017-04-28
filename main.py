@@ -13,11 +13,14 @@ my_hand = myHandCards()
 opp_hand = opponentHandCards()
 my_hero_power = myHeroPower()
 players_info = playersInfo()
+my_board = board()
 
 while True:
     where_power = power.tell()
-    log_line = power.readline()
+    where_zone = zone.tell()
+    log_line = power.readline() + zone.readline()
     if not log_line:
         time.sleep(1)
     else:
-        my_hero_power.check_n_change(log_line)
+        my_board.check_n_change(log_line)
+        #print log_line
