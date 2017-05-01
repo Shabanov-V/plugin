@@ -7,14 +7,14 @@ import re
 class playersInfo(IAlterationEntity):
     # Needs Zone
     my_id = int
-    my_name = "Grig0510"
+    my_name = str
     opp_id = int
     opp_name = str
 
-    __flag__ = bool
+    __waiting_for_opp_name__ = bool
 
     def __init__(self):
-        self.__flag__ = False
+        self.__waiting_for_opp_name__ = False
         self.my_name = ""
         self.opp_name = ""
 
@@ -23,24 +23,55 @@ class playersInfo(IAlterationEntity):
         print "Opponent name: " + self.opp_name
 
     def check_n_change(self, logLine):
-        print
-        # Flag == True => waiting for my name, otherwise opposing
-        # I tried :c
+        to_friendly_hand = re.search(regExps.smth_to_friendly_hand, logLine)
+        to_opposing_hand = re.search(regExps.smth_to_opposing_hand, logLine)
+        player_name_n_id = re.search(regExps.player_name_n_id, logLine)
+        if to_friendly_hand:
+            self.__waiting_for_opp_name__ = False
+        if to_opposing_hand:
+            self.__waiting_for_opp_name__ = True
+        if player_name_n_id and self.__waiting_for_opp_name__:
+            self.opp_id = player_name_n_id.group("id")
+            self.opp_name = player_name_n_id.group("name")
+            self.debug_print_shit()
+        if player_name_n_id and not(self.__waiting_for_opp_name__):
+            self.my_id = player_name_n_id.group("id")
+            self.my_name = player_name_n_id.group("name")
 
 
 class myHeroPower(IAlterationEntity):
     # Needs Power
     is_available = bool
+    players_info = playersInfo
 
     def debug_print_shit(self):
-        print str(self.is_available)
+        print "my heropower" + str(self.is_available)
 
-    def __init__(self):
+    def __init__(self, players_info):
         self.is_available = True
-        self.my_name = ""
+        self.players_info = players_info
 
     def check_n_change(self, logLine):
-        num_of_activations_this_turn = re.search(regExps.hero_power_activations.replace("(name)", playersInfo.my_name), logLine)
+        num_of_activations_this_turn = re.search(regExps.hero_power_activations.replace("(name)", self.players_info.my_name), logLine)
+        if num_of_activations_this_turn:
+            self.is_available = True if int(num_of_activations_this_turn.group("value")) == 0 else False
+            self.debug_print_shit()
+
+
+class opponentHeroPower(IAlterationEntity):
+    # Needs Power
+    is_available = bool
+    players_info = playersInfo
+
+    def debug_print_shit(self):
+        print "opponent heropower" + str(self.is_available)
+
+    def __init__(self, players_info):
+        self.is_available = True
+        self.players_info = players_info
+
+    def check_n_change(self, logLine):
+        num_of_activations_this_turn = re.search(regExps.hero_power_activations.replace("(name)", self.players_info.opp_name), logLine)
         if num_of_activations_this_turn:
             self.is_available = True if int(num_of_activations_this_turn.group("value")) == 0 else False
             self.debug_print_shit()
