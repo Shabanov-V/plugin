@@ -10,48 +10,57 @@ def json_id_by_cardId(cardId):
             return i
     return 0
 
-
+def get_json_prop(cardId, prop):
+    t = json_id_by_cardId(cardId)
+    if prop in cards[t]:
+        return cards[t][prop]
+    else:
+        return None
+    
 class Card():
-    card_id = str # JSON id
-    json_num = int
-    special_id = int
-    attack = int
-    health = int
-    mana_cost = int
-    type = str
-    name = str
-# Can I write without self.methodName or self.fieldName?
+    mana_cost  = None #int
+    special_id = None #str
+    name       = None #str
+    type       = None #str
+    attack     = None #int
+    health     = None #int
+    json_num   = None #str
     def __init__(self, cardId, specialId):
         self.special_id = specialId
-        self.card_id = cardId
-        self.json_num = json_id_by_cardId(cardId)
-        self.name = cards[self.json_num]["name"]
-        if cards[self.json_num]["type"] == "MINION":
-            self.type = "MINION"
-            self.attack = cards[self.json_num]["attack"]
-            self.health = cards[self.json_num]["health"]
-        else:
-            self.attack = None
-            self.health = None
-            self.type = cards[self.json_num]["type"]
+        self.card_id    = cardId
+        self.json_num   = json_id_by_cardId(cardId)
+        self.name       = get_json_prop(cardId, "name")
+        self.type       = get_json_prop(cardId, "type")
+        self.attack     = get_json_prop(cardId, "attack")
+        self.health     = get_json_prop(cardId, "health")
+    #TODO: Add card in hand bafs
+# Can I write without self.methodName or self.fieldName?
 
-
-
-
-class Minion():
-    card_id = int
-    isMine = bool
-    attack = int
-    health = int
-    maxHealt = int
-    silenced = bool
-    windfury = bool
-    taunt = bool
-    divine_shield = bool
-    frozen = bool
-    stealth = bool
-    position = int
-    num_attacks_this_turn = int
-    poisonous = bool
-    cost = int
-
+class Minion(Card):
+    name = None
+    card_id = None #int
+    special_id = None #int
+    json_num = None #str
+    attack = None #int
+    health = None #int
+    maxHealth = None #int
+    isMine = None #bool
+    silenced = None #bool
+    windfury = None #bool
+    taunt = None #bool
+    divine_shield = None #bool
+    frozen = None #bool
+    stealth = None #bool
+    position = None #int
+    num_attacks_this_turn = None #int
+    poisonous = None #bool
+    cost = None #int
+    def __init__(self, cardId, specialId):
+        self.type       = get_json_prop(cardId, "type")
+        if (self.type == "MINION"):
+            self.special_id = specialId
+            self.card_id    = cardId
+            self.json_num   = json_id_by_cardId(cardId)
+            self.name       = get_json_prop(cardId, "name")
+            self.attack     = get_json_prop(cardId, "attack")
+            self.health     = get_json_prop(cardId, "health")
