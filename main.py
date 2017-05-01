@@ -11,9 +11,10 @@ power.seek(os.stat(power_filename)[6])
 
 my_hand = myHandCards()
 opp_hand = opponentHandCards()
-my_hero_power = myHeroPower()
 players_info = playersInfo()
-my_board = board()
+my_hero_power = myHeroPower(players_info)
+opp_hero_power = opponentHeroPower(players_info)
+my_board = board();
 
 while True:
     where_power = power.tell()
@@ -22,5 +23,5 @@ while True:
     if not log_line:
         time.sleep(1)
     else:
-        my_board.check_n_change(log_line)
-        #print log_line
+       my_board.check_n_change(log_line)
+       #print log_line
