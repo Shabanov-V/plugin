@@ -195,7 +195,7 @@ class board(IAlterationEntity):
         self.addMinion(t, dstPos)
     
     def check_n_change(self, logLine):
-        minionPlay = re.search(regExps.minionPlay1, logLine)
+        minionPlay = re.search(regExps.minionPlay2, logLine)
         minionChangePosition = re.search(regExps.minionChangePosition1, logLine)
         died = re.search(regExps.died, logLine)
         if died:
@@ -203,7 +203,9 @@ class board(IAlterationEntity):
             self.debug_print_shit()
         if minionPlay:
             self.addMinion(Minion(minionPlay.group("cardId"), minionPlay.group("id")), minionPlay.group("dstPos"))
+            print "lol"
             self.debug_print_shit()
         if minionChangePosition:
             self.change_position(minionChangePosition.group("id"), int(minionChangePosition.group("dstPos")))
+            print "lol"
             self.debug_print_shit()
