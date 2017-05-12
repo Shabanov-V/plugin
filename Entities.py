@@ -45,7 +45,7 @@ class myHeroPower(IAlterationEntity):
     players_info = playersInfo
 
     def debug_print_shit(self):
-        print "my heropower" + str(self.is_available)
+        print "my heropower " + str(self.is_available)
 
     def __init__(self, players_info):
         self.is_available = True
@@ -64,7 +64,7 @@ class opponentHeroPower(IAlterationEntity):
     players_info = playersInfo
 
     def debug_print_shit(self):
-        print "opponent heropower" + str(self.is_available)
+        print "opponent heropower " + str(self.is_available)
 
     def __init__(self, players_info):
         self.is_available = True
@@ -107,7 +107,7 @@ class myHandCards(IAlterationEntity):
 
     def debug_print_shit(self):
         print "******************"
-        print '\n'.join(str(item.name) for item in self.hand_cards)
+        print '\n'.join(str(item.name) + " " + str(item.attack) + "\\" + str(item.health) + " manacost: " + str(item.mana_cost) for item in self.hand_cards)
 
     def add_card_to_hand(self, card):
         self.hand_cards.append(card)
@@ -122,18 +122,35 @@ class myHandCards(IAlterationEntity):
         self.hand_cards.remove(temp_card)
         self.hand_cards.insert(new_pos, temp_card) # -1
 
+    def tag_change(self, tag_name, value, special_id):
+        card_pos = None
+        for i in range(0, len(self.hand_cards)):
+            if self.hand_cards[i].special_id == special_id:
+                card_pos = i
+        if card_pos == None:
+            return
+        if tag_name == "ATK":
+            self.hand_cards[card_pos].attack = int(value)
+        if tag_name == "HEALTH":
+            self.hand_cards[card_pos].health = int(value)
+        if tag_name == "TAG_LAST_KNOWN_COST_IN_HAND":
+            self.hand_cards[card_pos].mana_cost = int(value)
+
     def check_n_change(self, logLine):
         played_card = re.search(regExps.from_friendly_hand, logLine)
         drawed_card = re.search(regExps.to_friendly_hand, logLine)
         changed_position = re.search(regExps.change_card_position, logLine)
+        tag_change = re.search(regExps.tag_change, logLine)
         if played_card:
-            self.del_card_from_hand(played_card.group("id"))
+            self.del_card_from_hand(int(played_card.group("id")))
             self.debug_print_shit()
         if drawed_card:
-            self.add_card_to_hand(Card(drawed_card.group("cardId"), drawed_card.group("id")))
+            self.add_card_to_hand(Card(drawed_card.group("cardId"), int(drawed_card.group("id"))))
             self.debug_print_shit()
         if changed_position:
             self.change_card_position(changed_position.group("id"), int(changed_position.group("pos_2")))
+        if tag_change:
+            self.tag_change(tag_change.group("tag"), tag_change.group("value"), int(tag_change.group("id")))
             
             
 class board(IAlterationEntity):

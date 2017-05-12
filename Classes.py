@@ -18,13 +18,14 @@ def get_json_prop(cardId, prop):
         return None
     
 class Card():
-    mana_cost  = None #int
-    special_id = None #str
-    name       = None #str
-    type       = None #str
-    attack     = None #int
-    health     = None #int
-    json_num   = None #str
+    card_id = str
+    mana_cost  = int
+    special_id = int
+    name       = str
+    type       = str
+    attack     = int
+    health     = int
+    json_num   = str
     def __init__(self, cardId, specialId):
         self.special_id = specialId
         self.card_id    = cardId
@@ -33,28 +34,28 @@ class Card():
         self.type       = get_json_prop(cardId, "type")
         self.attack     = get_json_prop(cardId, "attack")
         self.health     = get_json_prop(cardId, "health")
-    #TODO: Add card in hand bafs
-# Can I write without self.methodName or self.fieldName?
+        self.mana_cost  = get_json_prop(cardId, "cost")
 
 class Minion(Card):
-    name = None
-    card_id = None #int
-    special_id = None #int
-    json_num = None #str
-    attack = None #int
-    health = None #int
-    maxHealth = None #int
-    isMine = None #bool
-    silenced = None #bool
-    windfury = None #bool
-    taunt = None #bool
-    divine_shield = None #bool
-    frozen = None #bool
-    stealth = None #bool
-    position = None #int
-    num_attacks_this_turn = None #int
-    poisonous = None #bool
-    cost = None #int
+    name = str
+    card_id = int
+    special_id = int
+    json_num = str
+    attack = int
+    health = int
+    maxHealth = int
+    isMine = bool
+    silenced = bool
+    windfury = bool
+    taunt = bool
+    divine_shield = bool
+    frozen = bool
+    stealth = bool
+    position = int
+    num_attacks_this_turn = int
+    poisonous = bool
+    cost = int
+
     def __init__(self, cardId, specialId):
         self.type       = get_json_prop(cardId, "type")
         if (self.type == "MINION"):
