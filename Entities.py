@@ -148,7 +148,7 @@ class myHandCards(IAlterationEntity):
             self.add_card_to_hand(Card(drawed_card.group("cardId"), int(drawed_card.group("id"))))
             #self.debug_print_shit()
         if changed_position:
-            self.change_card_position(changed_position.group("id"), int(changed_position.group("pos_2")))
+            self.change_card_position(int(changed_position.group("id")), int(changed_position.group("pos_2")))
         if tag_change:
             self.tag_change(tag_change.group("tag"), tag_change.group("value"), int(tag_change.group("id")))
             
