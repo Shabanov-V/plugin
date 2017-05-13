@@ -16,7 +16,6 @@ opp_hand = opponentHandCards()
 players_info = playersInfo()
 my_hero_power = myHeroPower(players_info)
 opp_hero_power = opponentHeroPower(players_info)
-<<<<<<< HEAD
 my_board = board(0);
 op_board = board(1);
 
