@@ -143,10 +143,10 @@ class myHandCards(IAlterationEntity):
         tag_change = re.search(regExps.tag_change, logLine)
         if played_card:
             self.del_card_from_hand(int(played_card.group("id")))
-            self.debug_print_shit()
+            #self.debug_print_shit()
         if drawed_card:
             self.add_card_to_hand(Card(drawed_card.group("cardId"), int(drawed_card.group("id"))))
-            self.debug_print_shit()
+            #self.debug_print_shit()
         if changed_position:
             self.change_card_position(changed_position.group("id"), int(changed_position.group("pos_2")))
         if tag_change:
