@@ -16,9 +16,9 @@ opp_hand = opponentHandCards()
 players_info = playersInfo()
 my_hero_power = myHeroPower(players_info)
 opp_hero_power = opponentHeroPower(players_info)
-my_board = board(0);
-op_board = board(1);
-
+my_board = board(0)
+op_board = board(1)
+game_state = gameState()
 
 root = Tk()
 
@@ -64,11 +64,9 @@ thread.start()
 while True:
     where_power = power.tell()
     where_zone = zone.tell()
-    log_line = power.readline() + zone.readline()
+    log_line = zone.readline()
     if not log_line:
         time.sleep(1)
     else:
-       my_board.check_n_change(log_line)
-       op_board.check_n_change(log_line)
-       my_hand.check_n_change(log_line)
+       game_state.check_n_change(log_line)
        #print log_line

@@ -21,6 +21,8 @@ class playersInfo(IAlterationEntity):
     def debug_print_shit(self):
         print "My name: " + self.my_name
         print "Opponent name: " + self.opp_name
+        print "My id: " + str(self.my_id)
+        print "Opp id: " + str(self.opp_id)
 
     def check_n_change(self, logLine):
         to_friendly_hand = re.search(regExps.smth_to_friendly_hand, logLine)
@@ -37,6 +39,7 @@ class playersInfo(IAlterationEntity):
         if player_name_n_id and not(self.__waiting_for_opp_name__):
             self.my_id = player_name_n_id.group("id")
             self.my_name = player_name_n_id.group("name")
+            self.debug_print_shit()
 
 
 class myHeroPower(IAlterationEntity):
@@ -120,7 +123,8 @@ class myHandCards(IAlterationEntity):
         if temp_card == None:
             return
         self.hand_cards.remove(temp_card)
-        self.hand_cards.insert(new_pos, temp_card) # -1
+        self.hand_cards.insert(new_pos - 1, temp_card) # -1
+        print temp_card.name + " " + str(new_pos)
 
     def tag_change(self, tag_name, value, special_id):
         card_pos = None
@@ -143,12 +147,12 @@ class myHandCards(IAlterationEntity):
         tag_change = re.search(regExps.tag_change, logLine)
         if played_card:
             self.del_card_from_hand(int(played_card.group("id")))
-            #self.debug_print_shit()
+            self.debug_print_shit()
         if drawed_card:
             self.add_card_to_hand(Card(drawed_card.group("cardId"), int(drawed_card.group("id"))))
-            #self.debug_print_shit()
+            self.debug_print_shit()
         if changed_position:
-            self.change_card_position(changed_position.group("id"), int(changed_position.group("pos_2")))
+            self.change_card_position(int(changed_position.group("id")), int(changed_position.group("pos_2")))
         if tag_change:
             self.tag_change(tag_change.group("tag"), tag_change.group("value"), int(tag_change.group("id")))
             
@@ -242,3 +246,40 @@ class board(IAlterationEntity):
             self.change_position(minionChangePosition.group("id"), int(minionChangePosition.group("dstPos")))
             #print "wtf"
             #self.debug_print_shit()
+
+class gameState(IAlterationEntity):
+    __scha_budet__ = bool
+    gameState = int
+    mulligan_ended = bool
+    # 0 - Mulligan
+    # 1 - Your turn
+    # 2 - Opponent turn
+    # 3 - Discovering
+
+    def __init__(self):
+        self.game_state = 0
+        self.__waiting_4_deck__ = False
+        self.mulligan_ended = False
+
+    def debug_print_shit(self):
+        print "gamestate: " + str(self.game_state)
+
+    def check_n_change(self, logLine):
+        mulligan = re.search(regExps.end_of_mulligan, logLine)
+        main_action_start = re.search(regExps.main_action_start, logLine)
+        if mulligan:
+            self.mulligan_ended = True
+            return
+        if main_action_start:
+            self.__waiting_4_deck__ = True
+            return
+        my_turn = re.search(regExps.waiting_4_friendly_deck, logLine)
+        opp_turn = re.search(regExps.waiting_4_opposing_deck, logLine)
+        if my_turn and self.mulligan_ended:
+            self.game_state = 1
+            self.__waiting_4_deck__ = False
+            self.debug_print_shit()
+        if opp_turn and self.mulligan_ended:
+            self.game_state = 2
+            self.__waiting_4_deck__ = False
+            self.debug_print_shit()
