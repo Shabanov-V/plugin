@@ -27,3 +27,4 @@ class regExps():
     """ ZoneChangeList.ProcessChanges.*TRANSITIONING card \[name=(.+) id=(\d+) zone=.* zonePos=(\d) cardId=(.*) player=1\].* to FRIENDLY PLAY """
     """ ZoneChangeList.ProcessChanges.*id=\d+ .* \[name=.* id=(\d*) zone=.* zonePos=(\d) cardId=(.*) player=(.)\] pos from \d -> (\d) """
     """ name=.* id=(\d*).* cardId=(.*) player.*from .*PLAY -> .*GRAVEYARD """
+    resources_tag_change = r".*TAG_CHANGE Entity=(?P<name>(\w*\s*)*) tag=(?P<tag>(\w*\s*)*) value=(?P<value>\d*).*"
