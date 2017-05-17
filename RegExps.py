@@ -24,6 +24,11 @@ class regExps():
     opposite_minion_play = r"ZoneChangeList.ProcessChanges.*TRANSITIONING card \[name=(.+) id=(?P<id>\d+) zone=.* zonePos=(?P<dstPos>\d) cardId=(?P<cardId>.*) player=.\].* to OPPOSING PLAY"
     who_is_who1 = r"player=(?P<player_numb>.)].*FRIENDLY"
     who_is_who2 = r"player=(?P<player_numb>.)].*OPPOSING"
-    """ ZoneChangeList.ProcessChanges.*TRANSITIONING card \[name=(.+) id=(\d+) zone=.* zonePos=(\d) cardId=(.*) player=1\].* to FRIENDLY PLAY """
+    
+    minion_tag_changed = r"\[type=TAG_CHANGE entity=\[id=(?P<id>\d+) cardId=(?P<cardId>.*) name=(.+)\] tag=(?P<tag>.*) value=(?P<value>.*)\] c"
+    
+    """\[type=TAG_CHANGE entity=\[id=(\d+) cardId=(.*) name=(.*)\] tag=(.*) value=(.*)\] c"""
+    
+    """ ZoneChangeList.ProcessChanges.*TRANSITIONING card \[name=(.+) id=(\d+) zone=.* zonePos=(\d) cardId=(.*) player=.\].* to FRIENDLY PLAY """
     """ ZoneChangeList.ProcessChanges.*id=\d+ .* \[name=.* id=(\d*) zone=.* zonePos=(\d) cardId=(.*) player=(.)\] pos from \d -> (\d) """
     """ name=.* id=(\d*).* cardId=(.*) player.*from .*PLAY -> .*GRAVEYARD """

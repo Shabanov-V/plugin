@@ -110,8 +110,13 @@ class myHandCards(IAlterationEntity):
 
     def debug_print_shit(self):
         print "******************"
-        print '\n'.join(str(item.name) + " " + str(item.attack) + "\\" + str(item.health) + " manacost: " + str(item.mana_cost) for item in self.hand_cards)
-
+        #print '\n'.join(str(item.name) + " " + str(item.attack) + "\\" + str(item.health) + " manacost: " + str(item.mana_cost) for item in self.hand_cards)
+        rows = [[str(item.name), str(item.attack), "\\" , str(item.health) , " manacost: " , str(item.mana_cost)] for item in self.hand_cards]  
+        widths = [max(map(len, col)) for col in zip(*rows)]
+        for row in rows:
+            print "  ".join((val.ljust(width) for val, width in zip(row, widths)))
+        #print '\n'.join("{: >20} {: >2} {: >0} {: >2} {: >0} {: >2}".format(*[str(item.name), str(item.attack), "\\" , str(item.health) , " manacost: " , str(item.mana_cost)])  for item in self.hand_cards)
+        
     def add_card_to_hand(self, card):
         self.hand_cards.append(card)
 
@@ -124,7 +129,7 @@ class myHandCards(IAlterationEntity):
             return
         self.hand_cards.remove(temp_card)
         self.hand_cards.insert(new_pos - 1, temp_card) # -1
-        print temp_card.name + " " + str(new_pos)
+        #print temp_card.name + " " + str(new_pos)
 
     def tag_change(self, tag_name, value, special_id):
         card_pos = None
@@ -147,10 +152,10 @@ class myHandCards(IAlterationEntity):
         tag_change = re.search(regExps.tag_change, logLine)
         if played_card:
             self.del_card_from_hand(int(played_card.group("id")))
-            self.debug_print_shit()
+            #self.debug_print_shit()
         if drawed_card:
             self.add_card_to_hand(Card(drawed_card.group("cardId"), int(drawed_card.group("id"))))
-            self.debug_print_shit()
+            #self.debug_print_shit()
         if changed_position:
             self.change_card_position(int(changed_position.group("id")), int(changed_position.group("pos_2")))
         if tag_change:
@@ -204,10 +209,10 @@ class board(IAlterationEntity):
         
     def debug_print_shit(self):
         print "******************"
-        
-        for i in range(len(self.minions)):
-            if isinstance(self.minions[i], Minion):
-                print str(self.minions[i].name) + " " + str(self.minions[i].special_id)
+        rows = [[str(self.minions[i].name), str(self.minions[i].special_id), str(self.minions[i].taunt), str(self.minions[i].mechanics)] for i in range(len(self.minions))]  
+        widths = [max(map(len, col)) for col in zip(*rows)]
+        for row in rows:
+            print "  ".join((val.ljust(width) for val, width in zip(row, widths)))
     
     def change_position(self, special_id, dstPos):
         ti = self.get_minion_index_by_id(special_id)
@@ -219,6 +224,15 @@ class board(IAlterationEntity):
         self.removeMinionByIndex(ti)
         self.addMinion(t, dstPos)
     
+    def change_minion_tag(self, special_id, tag, value):
+        ti = self.get_minion_index_by_id(special_id)
+        if ti == None:
+            return
+        t = self.minions[ti]
+        if (tag == "TAUNT"):
+            self.minions[ti].add_mechanic(tag)
+            self.minions[ti].update_mechanics()
+    
     def check_n_change(self, logLine):
         friendlyMinionPlay = re.search(regExps.friendly_minion_play2, logLine)
         minionChangePosition = re.search(regExps.minion_change_position2, logLine)
@@ -226,6 +240,10 @@ class board(IAlterationEntity):
         died = re.search(regExps.died, logLine)
         whoIsWho1 = re.search(regExps.who_is_who1, logLine)
         whoIsWho2 = re.search(regExps.who_is_who2, logLine)
+        MiniontagChanged = re.search(regExps.minion_tag_changed, logLine)
+        if MiniontagChanged:
+            self.change_minion_tag(MiniontagChanged.group("id"), MiniontagChanged.group("tag"), MiniontagChanged.group("value"))
+            
         if whoIsWho1 and self.isOpponent == 0:
             self.playerNumb = int(whoIsWho1.group("player_numb"))
         if whoIsWho2 and self.isOpponent == 1:
@@ -278,8 +296,8 @@ class gameState(IAlterationEntity):
         if my_turn and self.mulligan_ended:
             self.game_state = 1
             self.__waiting_4_deck__ = False
-            self.debug_print_shit()
+            #self.debug_print_shit()
         if opp_turn and self.mulligan_ended:
             self.game_state = 2
             self.__waiting_4_deck__ = False
-            self.debug_print_shit()
+            #self.debug_print_shit()

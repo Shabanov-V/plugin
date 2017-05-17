@@ -69,4 +69,7 @@ while True:
         time.sleep(1)
     else:
        game_state.check_n_change(log_line)
+       my_board.check_n_change(log_line)
+       op_board.check_n_change(log_line)
+       my_hand.check_n_change(log_line)
        #print log_line
