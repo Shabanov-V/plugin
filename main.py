@@ -2,6 +2,7 @@ from Entities import *
 import os, time
 from Tkinter import *
 from threading import *
+from MouseControls import *
 
 zone_filename = 'C:\Program Files (x86)\Hearthstone\Logs\Zone.log'
 zone = open(zone_filename,'r')
@@ -38,7 +39,11 @@ bt3["text"] = "Print player board"
 
 bt4 = Button(root)
 bt4.pack()
-bt4["text"] = "Numbers"
+bt4["text"] = "End Turn"
+
+bt5 = Button(root)
+bt5.pack()
+bt5["text"] = "Move to 3 card"
 
 def printOppBoard(event):
     op_board.debug_print_shit()
@@ -49,14 +54,18 @@ def printPlayerBoard(event):
 def printPlayerHand(event):
     my_hand.debug_print_shit()
     
-def printPlayersNumbers(event):
-    print str(my_board.playerNumb) + " " + str(op_board.playerNumb)
+def mouse_EndTurn(event):
+    EndTurn()
+
+def MoveTo3rdCard(event):
+    MoveToCard(len(my_hand.hand_cards), 3)
     
         
 bt1.bind("<Button-1>", printPlayerHand)
 bt2.bind("<Button-1>", printOppBoard)
 bt3.bind("<Button-1>", printPlayerBoard)
-bt4.bind("<Button-1>", printPlayersNumbers)
+bt4.bind("<Button-1>", mouse_EndTurn)
+bt5.bind("<Button-1>", MoveTo3rdCard)
 
 
 thread = Thread(target = root.mainloop, args = ())

@@ -84,3 +84,16 @@ class Minion(Card):
         
     def delete_mechanic(self, mech):
         self.mechanics.remove(mech)
+        
+        
+class Point:
+    def __init__(self, x=0.0, y=0.0):
+        self.x = x
+        self.y = y
+        
+class Rect:
+    def __init__(self, (left, top, right, bottom)):
+        self.left = left
+        self.top = top
+        self.right = right
+        self.bottom = bottom
