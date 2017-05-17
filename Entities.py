@@ -301,3 +301,39 @@ class gameState(IAlterationEntity):
             self.game_state = 2
             self.__waiting_4_deck__ = False
             #self.debug_print_shit()
+
+class myHero(IAlterationEntity):
+    players_info = playersInfo
+    hp = int
+    armor = int
+    mana_crystals = int
+    available_resources = int
+    __temp_resources__ = int
+    __resources_used__ = int
+
+    def __init__(self, players_info):
+        self.players_info = players_info
+        self.__temp_resources__ = 0
+
+    def debug_print_shit(self):
+        print "HP: " + str(self.hp) + " Mana: " + str(self.available_resources)
+
+    def change_resource(self, tag_name, entity, value):
+        if entity == self.players_info.my_name:
+            if tag_name == "TEMP_RESOURCES":
+                self.__temp_resources__ = value
+                self.available_resources = self.mana_crystals + value - self.__resources_used__
+                self.debug_print_shit()
+            if tag_name == "RESOURCES":
+                self.mana_crystals = value
+                self.available_resources = value
+                self.debug_print_shit()
+            if tag_name == "RESOURCES_USED":
+                self.__resources_used__ = value
+                self.available_resources = self.mana_crystals + self.__temp_resources__ - value
+                self.debug_print_shit()
+
+    def check_n_change(self, logLine):
+        resources_changed = re.search(regExps.resources_tag_change, logLine)
+        if resources_changed and resources_changed.group("value") != "":
+            self.change_resource(resources_changed.group("tag"), resources_changed.group("name"), int(resources_changed.group("value")))
