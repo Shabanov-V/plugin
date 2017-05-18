@@ -33,3 +33,6 @@ class regExps():
     """ ZoneChangeList.ProcessChanges.*id=\d+ .* \[name=.* id=(\d*) zone=.* zonePos=(\d) cardId=(.*) player=(.)\] pos from \d -> (\d) """
     """ name=.* id=(\d*).* cardId=(.*) player.*from .*PLAY -> .*GRAVEYARD """
     resources_tag_change = r".*TAG_CHANGE Entity=(?P<name>(\w*\s*)*) tag=(?P<tag>(\w*\s*)*) value=(?P<value>\d*).*"
+    damage = r"META_DATA - Meta=DAMAGE Data=(?P<damage>\d*)"
+    hero_damaged = r"BLOCK_START BlockType=(?P<block_type>\w*).*Target=.*cardId=HERO.*player=(player_num)" # Dont forget to replace (player_num) => player_number
+    hero_damaged_tag = r"TAG_CHANGE Entity=.*cardId=HERO.*player=(player_num).*tag=DAMAGE value=(?P<value>\d*)" # Dont forget to replace (player_num) => player_number

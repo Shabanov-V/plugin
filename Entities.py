@@ -10,7 +10,8 @@ class playersInfo(IAlterationEntity):
     my_name = str
     opp_id = int
     opp_name = str
-
+    my_player_num = int
+    opposing_player_num = int
     __waiting_for_opp_name__ = bool
 
     def __init__(self):
@@ -21,25 +22,28 @@ class playersInfo(IAlterationEntity):
     def debug_print_shit(self):
         print "My name: " + self.my_name
         print "Opponent name: " + self.opp_name
-        print "My id: " + str(self.my_id)
-        print "Opp id: " + str(self.opp_id)
+        print "My num: " + str(self.my_player_num)
+        print "Opp num: " + str(self.opposing_player_num)
 
     def check_n_change(self, logLine):
         to_friendly_hand = re.search(regExps.smth_to_friendly_hand, logLine)
         to_opposing_hand = re.search(regExps.smth_to_opposing_hand, logLine)
         player_name_n_id = re.search(regExps.player_name_n_id, logLine)
+        my_player_num = re.search(regExps.who_is_who1, logLine)
+        opp_player_num = re.search(regExps.who_is_who2, logLine)
         if to_friendly_hand:
             self.__waiting_for_opp_name__ = False
         if to_opposing_hand:
             self.__waiting_for_opp_name__ = True
         if player_name_n_id and self.__waiting_for_opp_name__:
             self.opp_id = player_name_n_id.group("id")
-            self.opp_name = player_name_n_id.group("name")
-            self.debug_print_shit()
         if player_name_n_id and not(self.__waiting_for_opp_name__):
             self.my_id = player_name_n_id.group("id")
             self.my_name = player_name_n_id.group("name")
-            self.debug_print_shit()
+        if my_player_num:
+            self.my_player_num = my_player_num.group("player_numb")
+        if opp_player_num:
+            self.opposing_player_num = opp_player_num.group("player_numb")
 
 
 class myHeroPower(IAlterationEntity):
@@ -310,10 +314,13 @@ class myHero(IAlterationEntity):
     available_resources = int
     __temp_resources__ = int
     __resources_used__ = int
+    __prepare_damage__ = bool
 
     def __init__(self, players_info):
+        self.hp = 30
         self.players_info = players_info
         self.__temp_resources__ = 0
+        self.__prepare_damage__ = False
 
     def debug_print_shit(self):
         print "HP: " + str(self.hp) + " Mana: " + str(self.available_resources)
@@ -335,5 +342,10 @@ class myHero(IAlterationEntity):
 
     def check_n_change(self, logLine):
         resources_changed = re.search(regExps.resources_tag_change, logLine)
+        damage_changed = re.search(regExps.hero_damaged_tag.replace("(player_num)", str(self.players_info.my_player_num)), logLine)
+        if damage_changed:
+            self.hp = 30 - int(damage_changed.group("value"))
+            self.debug_print_shit()
         if resources_changed and resources_changed.group("value") != "":
             self.change_resource(resources_changed.group("tag"), resources_changed.group("name"), int(resources_changed.group("value")))
+            self.debug_print_shit()
