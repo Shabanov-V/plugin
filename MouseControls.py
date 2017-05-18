@@ -92,3 +92,11 @@ def MoveToCard(hand_size, cardNum):
     x = (((cardNum * 1.0) / (hand_size)) * handwidth) - (handwidth / 2.0) - 0.8
     y = (x * -0.16) * (x * -0.16)
     MoveTo(x + 44, y + 89)
+    
+def MoveToMinion(totalMinions, minionNum):
+    minionWidth = 29 / 3.0
+    totalWidth = totalMinions * minionWidth
+    minionX = (minionNum * minionWidth) - (minionWidth / 2)
+    cursorX = 50 - (totalWidth / 2) + minionX
+    MoveTo(cursorX, 55)
+        

@@ -174,6 +174,13 @@ class board(IAlterationEntity):
     def __init__(self, t):
         self.minions = [Minion(None, None)] * 10
         self.isOpponent = t
+    
+    def size_minions(self):
+        i = 0
+        for j in self.minions:
+            if (j.name != None):
+                i += 1
+        return i
         
     def addMinion(self, minion, dstPos):
         if minion.type != "MINION":
