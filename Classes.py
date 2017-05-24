@@ -67,6 +67,8 @@ class Minion(Card):
             self.attack     = get_json_prop(cardId, "attack")
             self.health     = get_json_prop(cardId, "health")
             self.mechanics  = get_json_prop(cardId, "mechanics")
+            if (self.mechanics == None):
+                self.mechanics = []
             #print "MECH:  " + str(self.mechanics)
             self.update_mechanics()
             #print "111"
