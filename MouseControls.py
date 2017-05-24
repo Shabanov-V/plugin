@@ -1,4 +1,4 @@
-import win32api, win32con, win32gui, math, time
+import win32api, win32gui, win32con, math, time
 from Classes import *
 from random import randint
 
@@ -12,8 +12,8 @@ def SetCursorPos(p):
     return
     
 def LinearSmoothMove(newPosition, steps):
-    start = GetCursorPosition();
-    iterPoint = start;
+    start = GetCursorPosition()
+    iterPoint = start
 
     # Find the slope of the line segment defined by start and newPosition
     slope = Point(newPosition.x - start.x, newPosition.y - start.y)
@@ -31,7 +31,8 @@ def LinearSmoothMove(newPosition, steps):
     # Move the mouse to the final destination.
     SetCursorPos(newPosition)
     return
-    
+
+
 def SendClick():
     p = GetCursorPosition()
     win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, p.x, p.y, 0, 0)
@@ -47,42 +48,44 @@ def GetHSRect():
     return Rect(t)
     
 def MoveTo(X, Y):
-    rectHS = GetHSRect();
-    windowWidth = rectHS.right - rectHS.left;
-    uiHeight = rectHS.bottom - rectHS.top;
-    uiWidth = ((uiHeight) / 3) * 4;
+    rectHS = GetHSRect()
+    windowWidth = rectHS.right - rectHS.left
+    uiHeight = rectHS.bottom - rectHS.top
+    uiWidth = ((uiHeight) / 3) * 4
 
-    xOffset = (windowWidth - uiWidth) / 2; #' The space on the side of the game UI
+    xOffset = (windowWidth - uiWidth) / 2 #' The space on the side of the game UI
 
-    endX = (X / 100.0) * uiWidth + xOffset + rectHS.left;
-    endY = (Y / 100.0) * uiHeight + rectHS.top + 8;
-    p = Point(endX, endY);
-    LinearSmoothMove(p, randint(30, 150));
+    endX = (X / 100.0) * uiWidth + xOffset + rectHS.left
+    endY = (Y / 100.0) * uiHeight + rectHS.top + 8
+    p = Point(endX, endY)
+    LinearSmoothMove(p, randint(30, 150))
 
 def ClickOn(X, Y):
-    MoveTo(X, Y);
-    time.sleep(randint(5, 20));
-    SendClick();    
+    MoveTo(X, Y)
+    time.sleep(randint(5, 20))
+    SendClick()
 
 def EndTurn():
-    MoveTo(90, 45);
-    time.sleep(1.5);
-    SendClick();
+    MoveTo(90, 45)
+    SendClick()
     
 def StartDrag():
-    s = GetCursorPosition();
-    xpos = s.x;
-    ypos = s.y;
+    s = GetCursorPosition()
+    xpos = s.x
+    ypos = s.y
     win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, xpos, ypos, 0, 0)
-    time.Sleep(randint(70, 130));
+    time.sleep(randint(70, 130))
 
 def EndDrag():
-    s = GetCursorPosition();
-    xpos = s.x;
-    ypos = s.y;
+    s = GetCursorPosition()
+    xpos = s.x
+    ypos = s.y
     win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, xpos, ypos, 0, 0)
-    time.sleep(randint(70, 130));   
-    
+    time.sleep(randint(70, 130))
+
+def MoveToBattleField():
+    MoveTo(50,50)
+
 def MoveToCard(hand_size, cardNum):
     handwidth = 0
     if (hand_size < 4):
@@ -92,11 +95,67 @@ def MoveToCard(hand_size, cardNum):
     x = (((cardNum * 1.0) / (hand_size)) * handwidth) - (handwidth / 2.0) - 0.8
     y = (x * -0.16) * (x * -0.16)
     MoveTo(x + 44, y + 89)
-    
+
+def MoveBetweenMinions(totalMinions, minionNum):
+    minionWidth = 29 / 3.0
+    totalWidth = totalMinions * minionWidth
+    minionX = (minionNum * minionWidth) - (minionWidth / 2)
+    cursorX = 50 - (totalWidth / 2) + minionX
+    MoveTo(cursorX - 4, 55)
+
 def MoveToMinion(totalMinions, minionNum):
+    if minionNum == 0:
+        MoveTo(50, 76)
+        return
     minionWidth = 29 / 3.0
     totalWidth = totalMinions * minionWidth
     minionX = (minionNum * minionWidth) - (minionWidth / 2)
     cursorX = 50 - (totalWidth / 2) + minionX
     MoveTo(cursorX, 55)
-        
+
+def MoveToOpponentMinion(totalMinions, minionNum):
+    if minionNum == 0:
+        MoveTo(50, 20)
+        return
+    minionWidth = 29 / 3.0
+    totalWidth = totalMinions * minionWidth
+    minionX = (minionNum * minionWidth) - (minionWidth / 2)
+    cursorX = 50 - (totalWidth / 2) + minionX
+    MoveTo(cursorX, 40)
+
+def HitMinion(minionNum, targetNum, myBoardSize, oppBoardSize):
+    MoveToMinion(myBoardSize, minionNum)
+    SendClick()
+    MoveToOpponentMinion(oppBoardSize, targetNum)
+    SendClick()
+
+def Hit(myMinion, oppMinion, myBoard, oppBoard):
+    MoveToMinion(myBoard.size_minions(), myBoard.get_minion_index_by_id(myMinion.special_id))
+    SendClick()
+    MoveToOpponentMinion(oppBoard.size_minions(), oppBoard.get_minion_index_by_id(oppMinion.special_id))
+    SendClick()
+
+def PlayMinion(my_hand, num_of_card, position, num_of_target, my_board, opp_board):
+    MoveToCard(len(my_hand.hand_cards), num_of_card)
+    SendClick()
+    MoveBetweenMinions(my_board.size_minions(), position)
+    SendClick()
+    if num_of_target != None:
+        MoveToOpponentMinion(opp_board.size_minions(), num_of_target)
+        SendClick()
+
+def PlaySpell(my_hand, num_of_card, num_of_target, my_board, opp_board):
+    MoveToCard(len(my_hand.hand_cards), num_of_card)
+    SendClick()
+    if num_of_target != None:
+        MoveToOpponentMinion(opp_board.size_minions(), num_of_target)
+        SendClick()
+    else:
+        MoveToBattleField()
+        SendClick()
+
+def HeroPower(target, opp_board):
+    MoveTo(60, 76)
+    SendClick()
+    if target != None:
+        MoveToOpponentMinion(opp_board.size_minions(), target)
