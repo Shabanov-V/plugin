@@ -25,7 +25,11 @@ class regExps():
     who_is_who1 = r"player=(?P<player_numb>.)].*FRIENDLY"
     who_is_who2 = r"player=(?P<player_numb>.)].*OPPOSING"
     
-    minion_tag_changed = r"\[type=TAG_CHANGE entity=\[id=(?P<id>\d+) cardId=(?P<cardId>.*) name=(.+)\] tag=(?P<tag>.*) value=(?P<value>.*)\] c"
+    minion_tag_changed1 = r"\[type=TAG_CHANGE entity=\[id=(?P<id>\d+) cardId=(?P<cardId>.*) name=(.+)\] tag=(?P<tag>.*) value=(?P<value>.*)\] c"
+    
+    minion_tag_changed2 = r" TAG_CHANGE Entity=\[name=.*id=(?P<id>\d+) zone=PLAY zonePos=\d cardId=(?P<cardId>.*) player=.\] tag=(?P<tag>.*) value=(?P<value>.*)"
+    
+    """ TAG_CHANGE Entity=\[name=.*id=(\d+) zone=PLAY zonePos=\d cardId=(.*) player=.\] tag=(.*) value=(.*)"""
     
     """\[type=TAG_CHANGE entity=\[id=(\d+) cardId=(.*) name=(.*)\] tag=(.*) value=(.*)\] c"""
     
