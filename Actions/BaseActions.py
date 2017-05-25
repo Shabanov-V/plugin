@@ -63,7 +63,7 @@ def MoveTo(X, Y):
     endX = (X / 100.0) * uiWidth + xOffset + rectHS.left
     endY = (Y / 100.0) * uiHeight + rectHS.top + 8
     p = Point(endX, endY)
-    LinearSmoothMove(p, randint(30, 150))
+    LinearSmoothMove(p, 50) # randint(30, 150)
 
 
 def ClickOn(X, Y):

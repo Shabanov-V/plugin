@@ -16,6 +16,7 @@ class MyHero(IAlterationEntity):
     __temp_resources__ = int
     __resources_used__ = int
     __prepare_damage__ = bool
+    atk = int
 
     def __init__(self, players_info):
         self.hp = 30
@@ -25,6 +26,7 @@ class MyHero(IAlterationEntity):
         self.__resources_used__ = 0
         self.has_weapon = False
         self.exhausted = False
+        self.atk = 0
 
     def debug_print_shit(self):
         print "HP: " + str(self.hp) + " Mana: " + str(self.available_resources)
@@ -44,9 +46,10 @@ class MyHero(IAlterationEntity):
     def check_n_change(self, logLine):
         resources_changed = re.search(regExps.resources_tag_change, logLine)
         damage_changed = re.search(regExps.hero_damaged_tag.replace("(player_num)", str(self.players_info.my_player_num)), logLine)
-        exhausted_tag_change = re.search(regExps.hero_exhausted, logLine)
+        exhausted_tag_change = re.search(regExps.hero_exhausted.replace("player_num", str(self.players_info.my_player_num)), logLine)
         weapon_added = re.search(regExps.my_weapon_played, logLine)
         weapon_dead = re.search(regExps.my_weapon_dead, logLine)
+        atk_changed = re.search(regExps.hero_atk_change.replace("player_num", str(self.players_info.my_player_num)), logLine)
         if damage_changed:
             self.hp = 30 - int(damage_changed.group("value"))
         if resources_changed and resources_changed.group("value") != "":
@@ -57,3 +60,5 @@ class MyHero(IAlterationEntity):
             self.has_weapon = True
         if weapon_dead:
             self.has_weapon = False
+        if atk_changed:
+            self.atk = int(atk_changed.group("value"))

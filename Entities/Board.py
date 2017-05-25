@@ -57,8 +57,9 @@ class Board(IAlterationEntity):
 
     def debug_print_shit(self):
         print "******************"
-        rows = [[str(self.minions[i].name), str(self.minions[i].special_id), str(self.minions[i].taunt),
-                 str(self.minions[i].mechanics)] for i in range(len(self.minions))]
+        rows = [[str(self.minions[i].name), str(self.minions[i].special_id), str(self.minions[i].attack), "/",
+                 str(self.minions[i].health), str(self.minions[i].exhausted), str(self.minions[i].frozen)] for i in
+                range(len(self.minions))]
         widths = [max(map(len, col)) for col in zip(*rows)]
         for row in rows:
             print "  ".join((val.ljust(width) for val, width in zip(row, widths)))
@@ -81,6 +82,20 @@ class Board(IAlterationEntity):
         if (tag == "TAUNT"):
             self.minions[ti].add_mechanic(tag)
             self.minions[ti].update_mechanics()
+        if (tag == "ZONE" and value == "SETASIDE"):
+            self.removeMinionByIndex(ti)
+        if (tag == "EXHAUSTED"):
+            self.minions[ti].exhausted = value
+        if (tag == "ATK"):
+            self.minions[ti].attack = value
+        if (tag == "DAMAGE"):
+            self.minions[ti].health = self.minions[ti].maxHealth - int(value)
+        if (tag == "FROZEN"):
+            self.minions[ti].frozen = value
+        if (tag == "CHARGE"):
+            self.minions[ti].charge = value
+        if (tag == "JUST_PLAYED"):
+            self.minions[ti].just_played = value
 
     def check_n_change(self, logLine):
         friendlyMinionPlay = re.search(regExps.friendly_minion_play2, logLine)
@@ -89,10 +104,14 @@ class Board(IAlterationEntity):
         died = re.search(regExps.died, logLine)
         whoIsWho1 = re.search(regExps.who_is_who1, logLine)
         whoIsWho2 = re.search(regExps.who_is_who2, logLine)
-        MiniontagChanged = re.search(regExps.minion_tag_changed, logLine)
-        if MiniontagChanged:
-            self.change_minion_tag(MiniontagChanged.group("id"), MiniontagChanged.group("tag"),
-                                   MiniontagChanged.group("value"))
+        MiniontagChanged1 = re.search(regExps.minion_tag_changed1, logLine)
+        MiniontagChanged2 = re.search(regExps.minion_tag_changed2, logLine)
+        if MiniontagChanged1:
+            self.change_minion_tag(MiniontagChanged1.group("id"), MiniontagChanged1.group("tag"),
+                                   MiniontagChanged1.group("value"))
+        if MiniontagChanged2:
+            self.change_minion_tag(MiniontagChanged2.group("id"), MiniontagChanged2.group("tag"),
+                                   MiniontagChanged2.group("value"))
 
         if whoIsWho1 and self.isOpponent == 0:
             self.playerNumb = int(whoIsWho1.group("player_numb"))

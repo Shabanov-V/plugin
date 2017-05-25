@@ -24,6 +24,9 @@ class HSActions():
     def confirm_mulligan(self):
         Mulligan.ConfirmMulligan()
 
+    def mulligan_card(self, my_hand, card_num):
+        Mulligan.Mulligan(my_hand, card_num)
+
     def find_next_game(self):
         FindNextGame.FindNextGame()
 

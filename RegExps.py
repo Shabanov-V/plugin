@@ -32,6 +32,14 @@ class regExps():
     """ ZoneChangeList.ProcessChanges.*TRANSITIONING card \[name=(.+) id=(\d+) zone=.* zonePos=(\d) cardId=(.*) player=.\].* to FRIENDLY PLAY """
     """ ZoneChangeList.ProcessChanges.*id=\d+ .* \[name=.* id=(\d*) zone=.* zonePos=(\d) cardId=(.*) player=(.)\] pos from \d -> (\d) """
     """ name=.* id=(\d*).* cardId=(.*) player.*from .*PLAY -> .*GRAVEYARD """
+    minion_tag_changed1 = r"\[type=TAG_CHANGE entity=\[id=(?P<id>\d+) cardId=(?P<cardId>.*) name=(.+)\] tag=(?P<tag>.*) value=(?P<value>.*)\] c"
+
+    minion_tag_changed2 = r" TAG_CHANGE Entity=\[name=.*id=(?P<id>\d+) zone=PLAY zonePos=\d cardId=(?P<cardId>.*) player=.\] tag=(?P<tag>.*) value=(?P<value>.*)"
+    """ TAG_CHANGE Entity=\[name=.*id=(\d+) zone=PLAY zonePos=\d cardId=(.*) player=.\] tag=(.*) value=(.*)"""
+    """\[type=TAG_CHANGE entity=\[id=(\d+) cardId=(.*) name=(.*)\] tag=(.*) value=(.*)\] c"""
+    """ ZoneChangeList.ProcessChanges.*TRANSITIONING card \[name=(.+) id=(\d+) zone=.* zonePos=(\d) cardId=(.*) player=.\].* to FRIENDLY PLAY """
+    """ ZoneChangeList.ProcessChanges.*id=\d+ .* \[name=.* id=(\d*) zone=.* zonePos=(\d) cardId=(.*) player=(.)\] pos from \d -> (\d) """
+    """ name=.* id=(\d*).* cardId=(.*) player.*from .*PLAY -> .*GRAVEYARD """
     resources_tag_change = r".*TAG_CHANGE Entity=(?P<name>(\w*\s*)*) tag=(?P<tag>(\w*\s*)*) value=(?P<value>\d*).*"
     damage = r"META_DATA - Meta=DAMAGE Data=(?P<damage>\d*)"
     hero_damaged = r"BLOCK_START BlockType=(?P<block_type>\w*).*Target=.*cardId=HERO.*player=(player_num)" # Dont forget to replace (player_num) => player_number
@@ -40,4 +48,5 @@ class regExps():
     game_started = "CREATE_GAME"
     my_weapon_played = "zone from  -> FRIENDLY PLAY (Weapon)"
     my_weapon_dead = "zone from FRIENDLY PLAY (Weapon) -> FRIENDLY GRAVEYARD"
-    hero_exhausted = r"TAG_CHANGE Entity=.*cardId=HERO.*tag=EXHAUSTED value=(?P<value>\d*)"
+    hero_exhausted = r"TAG_CHANGE Entity=.*cardId=HERO.*player=(player_num).*tag=EXHAUSTED value=(?P<value>\d*)"
+    hero_atk_change = r"TAG_CHANGE Entity=.*cardId=HERO.*player=(player_num).*tag=ATK value=(?P<value>\d*)"
