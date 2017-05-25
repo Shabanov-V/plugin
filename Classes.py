@@ -55,7 +55,9 @@ class Minion(Card):
     num_attacks_this_turn = None #int
     poisonous = None #bool
     cost = None #int
-    exhausted = None #bool
+    charge = 0
+    just_played = 0
+    exhausted = 0 #bool
     mechanics = []
 
     def __init__(self, cardId, specialId):
@@ -70,6 +72,8 @@ class Minion(Card):
             self.maxHealth  = get_json_prop(cardId, "health")
             self.exhausted  = 0
             self.frozen     = 0
+            charge          = 0
+            just_played     = 0
             self.mechanics  = get_json_prop(cardId, "mechanics")
             if (self.mechanics == None):
                 self.mechanics = []

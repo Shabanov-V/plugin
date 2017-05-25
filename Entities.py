@@ -253,6 +253,10 @@ class board(IAlterationEntity):
             self.minions[ti].health = self.minions[ti].maxHealth - int(value)
         if (tag == "FROZEN"):
             self.minions[ti].frozen = value
+        if (tag == "CHARGE"):
+            self.minions[ti].charge = value
+        if (tag == "JUST_PLAYED"):
+            self.minions[ti].just_played = value
     
     def check_n_change(self, logLine):
         friendlyMinionPlay = re.search(regExps.friendly_minion_play2, logLine)
