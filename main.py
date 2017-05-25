@@ -1,94 +1,63 @@
-from Entities import *
-import os, time
-from Tkinter import *
-from threading import *
-from MouseControls import *
+from Parser import Parser
+from HSActions import HSActions
+import time
 
-zone_filename = 'C:\Program Files (x86)\Hearthstone\Logs\Zone.log'
-zone = open(zone_filename,'r')
-zone.seek(os.stat(zone_filename)[6])
-
-power_filename = 'C:\Program Files (x86)\Hearthstone\Logs\Power.log'
-power = open(power_filename, 'r')
-power.seek(os.stat(power_filename)[6])
-
-my_hand = myHandCards()
-opp_hand = opponentHandCards()
-players_info = playersInfo()
-my_hero_power = myHeroPower(players_info)
-opp_hero_power = opponentHeroPower(players_info)
-my_board = board(0)
-op_board = board(1)
-game_state = gameState()
-my_hero = myHero(players_info)
-
-root = Tk()
-
-bt1 = Button(root)
-bt1.pack()
-bt1["text"] = "Print player hand"
+parser = Parser()
+actions = HSActions()
 
 
-bt2 = Button(root)
-bt2.pack()
-bt2["text"] = "Print opp board"
+def find_card_to_play(my_hand, available_resources):
+    for i in range(0, len(my_hand.hand_cards)):
+        if my_hand.hand_cards[i].mana_cost <= available_resources:
+            return i
+    return None
 
-bt3 = Button(root)
-bt3.pack()
-bt3["text"] = "Print player board"
-
-bt4 = Button(root)
-bt4.pack()
-bt4["text"] = "End Turn"
-
-bt5 = Button(root)
-bt5.pack()
-bt5["text"] = "Move to 3 card"
-
-bt6 = Button(root)
-bt6.pack()
-bt6["text"] = "Move to 2 minion"
-
-def printOppBoard(event):
-    op_board.debug_print_shit()
-
-def printPlayerBoard(event):
-    my_board.debug_print_shit()
-        
-def printPlayerHand(event):
-    my_hand.debug_print_shit()
-    
-def mouse_EndTurn(event):
-    EndTurn()
-
-def MoveTo3rdCard(event):
-    MoveToCard(len(my_hand.hand_cards), 3)
-    
-def MoveTo2sdMinion(event):
-    MoveToMinion(my_board.size_minions(), 2)
-    
-        
-bt1.bind("<Button-1>", printPlayerHand)
-bt2.bind("<Button-1>", printOppBoard)
-bt3.bind("<Button-1>", printPlayerBoard)
-bt4.bind("<Button-1>", mouse_EndTurn)
-bt5.bind("<Button-1>", MoveTo3rdCard)
-bt6.bind("<Button-1>", MoveTo2sdMinion)
+def find_taunt(opp_board):
+    for i in range(1, opp_board.size_minions() + 1):
+        if opp_board.minions[i].taunt:
+            return i
+    return None
 
 
-thread = Thread(target = root.mainloop, args = ())
-thread.start()
+parser.start()
 
-while True:
-    where_power = power.tell()
-    where_zone = zone.tell()
-    log_line = zone.readline() + power.readline()
-    if not log_line:
-        time.sleep(1)
-    else:
-        #players_info.check_n_change(log_line)
-        #my_hero.check_n_change(log_line)
-        my_board.check_n_change(log_line)
-        op_board.check_n_change(log_line)
-        my_hand.check_n_change(log_line)
-        
+
+time.sleep(5)
+actions.find_next_game()
+
+while parser.game_state.game_state != 0:
+    time.sleep(2)
+
+time.sleep(20)
+actions.confirm_mulligan()
+time.sleep(6)
+
+while parser.game_state.game_state != 4:
+    if parser.game_state.game_state == 1:
+        time.sleep(3)
+        num_of_card = find_card_to_play(parser.my_hand, parser.my_hero.available_resources)
+        while num_of_card != None:
+            #print str(parser.my_hand.hand_cards[num_of_card].mana_cost) + "   " + str(parser.my_hero.available_resources)
+            if parser.my_hand.hand_cards[num_of_card].type == "WEAPON":
+                actions.play_weapon(parser.my_hand, num_of_card)
+            if parser.my_hand.hand_cards[num_of_card].type == "SPELL":
+                actions.play_spell(parser.my_hand, num_of_card + 1, 0 if parser.my_hand.hand_cards[num_of_card].target_required else None, parser.my_board, parser.opp_board)
+            if parser.my_hand.hand_cards[num_of_card].type == "MINION":
+                actions.play_minion(parser.my_hand, num_of_card + 1, 1, 0 if parser.my_hand.hand_cards[num_of_card].target_required else None, parser.my_board, parser.opp_board)
+            time.sleep(3)
+            num_of_card = find_card_to_play(parser.my_hand, parser.my_hero.available_resources)
+        if parser.my_hero.available_resources >= 2:
+            actions.hero_power(0, parser.opp_board)
+        taunt_id = find_taunt(parser.opp_board)
+        cur_opp_board_size = parser.opp_board.size_minions()
+        if taunt_id == None:
+            for i in range(1, parser.my_board.size_minions() + 1):
+                actions.hit(i, 0, parser.my_board.size_minions(), parser.opp_board.size_minions())
+        if taunt_id != None:
+            for i in range(1, parser.my_board.size_minions() + 1):
+                if cur_opp_board_size != parser.opp_board.size_minions():
+                    break
+                actions.hit(i, taunt_id, parser.my_board.size_minions(), parser.opp_board.size_minions())
+        taunt_id = find_taunt(parser.opp_board)
+        actions.end_turn()
+    time.sleep(2)

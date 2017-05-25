@@ -16,7 +16,8 @@ def get_json_prop(cardId, prop):
         return cards[t][prop]
     else:
         return None
-    
+
+
 class Card():
     card_id = str
     mana_cost  = int
@@ -26,6 +27,8 @@ class Card():
     attack     = int
     health     = int
     json_num   = str
+    target_required = bool
+
     def __init__(self, cardId, specialId):
         self.special_id = specialId
         self.card_id    = cardId
@@ -35,6 +38,10 @@ class Card():
         self.attack     = get_json_prop(cardId, "attack")
         self.health     = get_json_prop(cardId, "health")
         self.mana_cost  = get_json_prop(cardId, "cost")
+        if get_json_prop(cardId, "playRequirements") != None:
+            self.target_required = True if "REQ_TARGET_TO_PLAY" in get_json_prop(cardId, "playRequirements") else False
+        else:
+            self.target_required = False
 
 class Minion(Card):
     name = None #str

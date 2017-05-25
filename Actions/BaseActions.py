@@ -4,13 +4,15 @@ from random import randint
 
 
 def GetCursorPosition():
-    flags, hcursor, (x,y) = win32gui.GetCursorInfo()
-    return Point(x,y)
+    flags, hcursor, (x, y) = win32gui.GetCursorInfo()
+    return Point(x, y)
+
 
 def SetCursorPos(p):
     win32api.SetCursorPos(((int(round(p.x))), int(round(p.y))))
     return
-    
+
+
 def LinearSmoothMove(newPosition, steps):
     start = GetCursorPosition()
     iterPoint = start
@@ -37,54 +39,38 @@ def SendClick():
     p = GetCursorPosition()
     win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, p.x, p.y, 0, 0)
     win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, p.x, p.y, 0, 0)
-    
+
+
 def GetHSRect():
     def enumHandler(hwnd, lParam):
         if win32gui.IsWindowVisible(hwnd):
             if 'Hearthstone' == win32gui.GetWindowText(hwnd):
                 global t
                 t = win32gui.GetWindowRect(hwnd)
+
     win32gui.EnumWindows(enumHandler, None)
     return Rect(t)
-    
+
+
 def MoveTo(X, Y):
     rectHS = GetHSRect()
     windowWidth = rectHS.right - rectHS.left
     uiHeight = rectHS.bottom - rectHS.top
     uiWidth = ((uiHeight) / 3) * 4
 
-    xOffset = (windowWidth - uiWidth) / 2 #' The space on the side of the game UI
+    xOffset = (windowWidth - uiWidth) / 2  # ' The space on the side of the game UI
 
     endX = (X / 100.0) * uiWidth + xOffset + rectHS.left
     endY = (Y / 100.0) * uiHeight + rectHS.top + 8
     p = Point(endX, endY)
     LinearSmoothMove(p, randint(30, 150))
 
+
 def ClickOn(X, Y):
     MoveTo(X, Y)
     time.sleep(randint(5, 20))
     SendClick()
 
-def EndTurn():
-    MoveTo(90, 45)
-    SendClick()
-    
-def StartDrag():
-    s = GetCursorPosition()
-    xpos = s.x
-    ypos = s.y
-    win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, xpos, ypos, 0, 0)
-    time.sleep(randint(70, 130))
-
-def EndDrag():
-    s = GetCursorPosition()
-    xpos = s.x
-    ypos = s.y
-    win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, xpos, ypos, 0, 0)
-    time.sleep(randint(70, 130))
-
-def MoveToBattleField():
-    MoveTo(50,50)
 
 def MoveToCard(hand_size, cardNum):
     handwidth = 0
@@ -123,39 +109,6 @@ def MoveToOpponentMinion(totalMinions, minionNum):
     cursorX = 50 - (totalWidth / 2) + minionX
     MoveTo(cursorX, 40)
 
-def HitMinion(minionNum, targetNum, myBoardSize, oppBoardSize):
-    MoveToMinion(myBoardSize, minionNum)
-    SendClick()
-    MoveToOpponentMinion(oppBoardSize, targetNum)
-    SendClick()
 
-def Hit(myMinion, oppMinion, myBoard, oppBoard):
-    MoveToMinion(myBoard.size_minions(), myBoard.get_minion_index_by_id(myMinion.special_id))
-    SendClick()
-    MoveToOpponentMinion(oppBoard.size_minions(), oppBoard.get_minion_index_by_id(oppMinion.special_id))
-    SendClick()
-
-def PlayMinion(my_hand, num_of_card, position, num_of_target, my_board, opp_board):
-    MoveToCard(len(my_hand.hand_cards), num_of_card)
-    SendClick()
-    MoveBetweenMinions(my_board.size_minions(), position)
-    SendClick()
-    if num_of_target != None:
-        MoveToOpponentMinion(opp_board.size_minions(), num_of_target)
-        SendClick()
-
-def PlaySpell(my_hand, num_of_card, num_of_target, my_board, opp_board):
-    MoveToCard(len(my_hand.hand_cards), num_of_card)
-    SendClick()
-    if num_of_target != None:
-        MoveToOpponentMinion(opp_board.size_minions(), num_of_target)
-        SendClick()
-    else:
-        MoveToBattleField()
-        SendClick()
-
-def HeroPower(target, opp_board):
-    MoveTo(60, 76)
-    SendClick()
-    if target != None:
-        MoveToOpponentMinion(opp_board.size_minions(), target)
+def MoveToBattleField():
+    MoveTo(50,50)

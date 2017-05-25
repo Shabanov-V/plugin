@@ -1,3 +1,5 @@
+import re
+
 class regExps():
     # Zone reg exps
     from_friendly_hand = r"name=.* id=(?P<id>\d*).*zonePos=(?P<zonePos>.*).* cardId=(?P<cardId>.*) player.*from FRIENDLY HAND ->*"
@@ -12,6 +14,7 @@ class regExps():
     waiting_4_opposing_deck = "START waiting for zone OPPOSING DECK"
     main_action_start = "name=GameEntity\] tag=NEXT_STEP value=MAIN_ACTION"
     end_of_mulligan = "tag=MULLIGAN_STATE value=WAITING"
+
     # Power reg exps
     tag_change = r".*TAG_CHANGE Entity=\[name=(?P<name>(\w*\s*)*) id=(?P<id>\d*).*zonePos=(?P<zonePos>\d*) cardId=(?P<cardId>\w*) player=(?P<player>\d*)\] tag=(?P<tag>\w*) value=(?P<value>\d*).*"
     hero_power_activations = ".*Entity=(name).*tag=HEROPOWER_ACTIVATIONS_THIS_TURN value=(?P<value>\d*)" # Dont forget to replace (name) => player_name
@@ -24,11 +27,8 @@ class regExps():
     opposite_minion_play = r"ZoneChangeList.ProcessChanges.*TRANSITIONING card \[name=(.+) id=(?P<id>\d+) zone=.* zonePos=(?P<dstPos>\d) cardId=(?P<cardId>.*) player=.\].* to OPPOSING PLAY"
     who_is_who1 = r"player=(?P<player_numb>.)].*FRIENDLY"
     who_is_who2 = r"player=(?P<player_numb>.)].*OPPOSING"
-    
     minion_tag_changed = r"\[type=TAG_CHANGE entity=\[id=(?P<id>\d+) cardId=(?P<cardId>.*) name=(.+)\] tag=(?P<tag>.*) value=(?P<value>.*)\] c"
-    
     """\[type=TAG_CHANGE entity=\[id=(\d+) cardId=(.*) name=(.*)\] tag=(.*) value=(.*)\] c"""
-    
     """ ZoneChangeList.ProcessChanges.*TRANSITIONING card \[name=(.+) id=(\d+) zone=.* zonePos=(\d) cardId=(.*) player=.\].* to FRIENDLY PLAY """
     """ ZoneChangeList.ProcessChanges.*id=\d+ .* \[name=.* id=(\d*) zone=.* zonePos=(\d) cardId=(.*) player=(.)\] pos from \d -> (\d) """
     """ name=.* id=(\d*).* cardId=(.*) player.*from .*PLAY -> .*GRAVEYARD """
@@ -36,3 +36,8 @@ class regExps():
     damage = r"META_DATA - Meta=DAMAGE Data=(?P<damage>\d*)"
     hero_damaged = r"BLOCK_START BlockType=(?P<block_type>\w*).*Target=.*cardId=HERO.*player=(player_num)" # Dont forget to replace (player_num) => player_number
     hero_damaged_tag = r"TAG_CHANGE Entity=.*cardId=HERO.*player=(player_num).*tag=DAMAGE value=(?P<value>\d*)" # Dont forget to replace (player_num) => player_number
+    game_over = "TAG_CHANGE Entity=GameEntity tag=NEXT_STEP value=FINAL_GAMEOVER"
+    game_started = "CREATE_GAME"
+    my_weapon_played = "zone from  -> FRIENDLY PLAY (Weapon)"
+    my_weapon_dead = "zone from FRIENDLY PLAY (Weapon) -> FRIENDLY GRAVEYARD"
+    hero_exhausted = r"TAG_CHANGE Entity=.*cardId=HERO.*tag=EXHAUSTED value=(?P<value>\d*)"
