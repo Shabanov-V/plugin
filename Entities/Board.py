@@ -94,6 +94,8 @@ class Board(IAlterationEntity):
             self.minions[ti].frozen = value
         if (tag == "CHARGE"):
             self.minions[ti].charge = value
+            if int(self.minions[ti].just_played) == 1 and int(self.minions[ti].charge) == 1:
+                self.minions[ti].exhausted = 0
         if (tag == "JUST_PLAYED"):
             self.minions[ti].just_played = value
 

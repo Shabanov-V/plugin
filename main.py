@@ -14,8 +14,10 @@ def mulligan(my_hand):
 
 def find_card_to_play(my_hand, available_resources):
     for i in range(0, len(my_hand.hand_cards)):
+        if my_hand.hand_cards[i].mana_cost <= available_resources and my_hand.hand_cards[i].type == "WEAPON":
+            return i
+    for i in range(0, len(my_hand.hand_cards)):
         if my_hand.hand_cards[i].mana_cost <= available_resources:
-            print str(len(my_hand.hand_cards)) + " " + str(i)
             return i
     return None
 
@@ -29,7 +31,7 @@ def find_taunt(opp_board):
 
 def find_non_exhausted_minion(my_board):
     for i in range(1, my_board.size_minions() + 1):
-        if (int(my_board.minions[i].exhausted) == 0 or int(my_board.minions[i].charge) == 1 and int(my_board.minions[i].just_played) == 1) and my_board.minions[i].attack > 0:
+        if int(my_board.minions[i].exhausted) == 0 and my_board.minions[i].attack > 0:
             return i
     if parser.my_hero.exhausted == False and parser.my_hero.atk > 0:
         return 0
@@ -55,7 +57,7 @@ while True:
             num_of_card = find_card_to_play(parser.my_hand, parser.my_hero.available_resources)
             while num_of_card != None:
                if len(parser.my_hand.hand_cards) > 0 and parser.my_hand.hand_cards[num_of_card].type == "WEAPON":
-                   actions.play_weapon(parser.my_hand, num_of_card)
+                   actions.play_weapon(parser.my_hand, num_of_card + 1)
                if len(parser.my_hand.hand_cards) > 0 and parser.my_hand.hand_cards[num_of_card].type == "SPELL":
                    actions.play_spell(parser.my_hand, num_of_card + 1, 0 if parser.my_hand.hand_cards[num_of_card].target_required else None, parser.my_board, parser.opp_board)
                if len(parser.my_hand.hand_cards) > 0 and parser.my_hand.hand_cards[num_of_card].type == "MINION":
@@ -78,4 +80,5 @@ while True:
             time.sleep(2)
             actions.end_turn()
             time.sleep(8)
+        time.sleep(3)
     actions.after_game_over()

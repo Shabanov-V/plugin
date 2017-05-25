@@ -50,7 +50,7 @@ class Parser():
             where_zone = zone.tell()
             log_line = zone.readline() + power.readline()
             if not log_line:
-                time.sleep(1)
+                time.sleep(0.5)
             else:
                 self.my_hand.check_n_change(log_line)
                 self.opp_hand.check_n_change(log_line)

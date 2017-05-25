@@ -1,5 +1,3 @@
-import re
-
 class regExps():
     # Zone reg exps
     from_friendly_hand = r"name=.* id=(?P<id>\d*).*zonePos=(?P<zonePos>.*).* cardId=(?P<cardId>.*) player.*from FRIENDLY HAND ->*"
