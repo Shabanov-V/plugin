@@ -213,7 +213,7 @@ class board(IAlterationEntity):
             return
         for i in range(index, 7):
             self.minions[i] = self.minions[i + 1]
-        self.minions[7] = Minion(None, None)
+        self.minions[7] = Minion(None, None)   
         
     def removeMinion(self, minion):
         self.removeMinionByIndex(self.getMinionIndex(minion))
@@ -243,6 +243,8 @@ class board(IAlterationEntity):
         if (tag == "TAUNT"):
             self.minions[ti].add_mechanic(tag)
             self.minions[ti].update_mechanics()
+        if (tag == "ZONE" and value == "SETASIDE"):
+            self.removeMinionByIndex(ti)
     
     def check_n_change(self, logLine):
         friendlyMinionPlay = re.search(regExps.friendly_minion_play2, logLine)

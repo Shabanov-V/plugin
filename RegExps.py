@@ -15,7 +15,7 @@ class regExps():
     # Power reg exps
     tag_change = r".*TAG_CHANGE Entity=\[name=(?P<name>(\w*\s*)*) id=(?P<id>\d*).*zonePos=(?P<zonePos>\d*) cardId=(?P<cardId>\w*) player=(?P<player>\d*)\] tag=(?P<tag>\w*) value=(?P<value>\d*).*"
     hero_power_activations = ".*Entity=(name).*tag=HEROPOWER_ACTIVATIONS_THIS_TURN value=(?P<value>\d*)" # Dont forget to replace (name) => player_name
-    died = r"name=.* id=(?P<id>\d*).* cardId=(?P<cardId>.*) player.*from .*PLAY -> .*GRAVEYARD"
+    died = r"name=.* id=(?P<id>\d*).* cardId=(?P<cardId>.*) player.*from .*PLAY -> .*"
     minionChangePosition = r"ZoneMgr.*id=(?P<id>\d*).*zone=PLAY.*zonePos (?P<from>\d*) -> (?P<to>\d*)"
     minionPlay1 = r"PowerTaskList.DebugPrintPower.*TAG_CHANGE Entity=\[name=.* id=(?P<id>\d*).*zonePos=(?P<dstPos>\d).*cardId=(?P<cardId>.*) player=.\] tag=ZONE value=PLAY"
     minionChangePosition1 = r"PowerTaskList.DebugPrintPower.*TAG_CHANGE Entity=\[name=.* id=(?P<id>\d*).*cardId=(?P<cardId>.*) player=.\] tag=ZONE_POSITION value=(?P<dstPos>\d)"
@@ -30,7 +30,9 @@ class regExps():
     """\[type=TAG_CHANGE entity=\[id=(\d+) cardId=(.*) name=(.*)\] tag=(.*) value=(.*)\] c"""
     
     """ ZoneChangeList.ProcessChanges.*TRANSITIONING card \[name=(.+) id=(\d+) zone=.* zonePos=(\d) cardId=(.*) player=.\].* to FRIENDLY PLAY """
+    
     """ ZoneChangeList.ProcessChanges.*id=\d+ .* \[name=.* id=(\d*) zone=.* zonePos=(\d) cardId=(.*) player=(.)\] pos from \d -> (\d) """
+    
     """ name=.* id=(\d*).* cardId=(.*) player.*from .*PLAY -> .*GRAVEYARD """
     resources_tag_change = r".*TAG_CHANGE Entity=(?P<name>(\w*\s*)*) tag=(?P<tag>(\w*\s*)*) value=(?P<value>\d*).*"
     damage = r"META_DATA - Meta=DAMAGE Data=(?P<damage>\d*)"
