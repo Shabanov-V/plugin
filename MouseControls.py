@@ -100,3 +100,17 @@ def MoveToMinion(totalMinions, minionNum):
     cursorX = 50 - (totalWidth / 2) + minionX
     MoveTo(cursorX, 55)
         
+        
+def MoveToMulligan(cardNum, isCoin):
+        if isCoin:
+            optionSize = 24.5
+            optionsWidth = 3 * optionSize
+            myOption = (cardNum * optionSize) - (optionSize / 2)
+            optionStart = 50 - (optionsWidth / 2)
+            MoveTo(optionStart + myOption, 50)
+        else:
+            optionSize = 17.5
+            optionsWidth = 4 * optionSize
+            myOption = (cardNum * optionSize) - (optionSize / 2)
+            optionStart = 50 - (optionsWidth / 2)
+            MoveTo(optionStart + myOption, 50)
