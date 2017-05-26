@@ -32,6 +32,7 @@ def find_taunt(opp_board):
 def find_non_exhausted_minion(my_board):
     for i in range(1, my_board.size_minions() + 1):
         if int(my_board.minions[i].exhausted) == 0 and my_board.minions[i].attack > 0:
+            my_board.minions[i].exhausted = 1
             return i
     if parser.my_hero.exhausted == False and parser.my_hero.atk > 0:
         return 0
